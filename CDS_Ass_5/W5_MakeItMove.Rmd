@@ -60,7 +60,7 @@ ggplot(subset(gapminder, year == 2007), aes(gdpPercap, lifeExp, size = pop)) +
 The black bubbles are a bit hard to read, the comparison would be easier with a bit more visual differentiation.
 
 Q3. Can you differentiate the continents by color and fix the axis labels?
-```{r 2007}
+```{r 2007_lab_fix}
 ggplot(subset(gapminder, year == 2007), aes(gdpPercap, lifeExp, size = pop, colour = continent)) +
   geom_point() +
   scale_x_discrete(name = "GPD Per Capita")+
