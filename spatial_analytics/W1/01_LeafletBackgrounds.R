@@ -39,10 +39,10 @@ leaflet() %>%
   addProviderTiles("Esri.WorldPhysical", group = "Physical") %>% 
   addProviderTiles("Esri.WorldImagery", group = "Aerial") %>% 
   addProviderTiles("MtbMap", group = "Geo") %>% 
-
-addLayersControl(
-  baseGroups = c("Geo","Aerial", "Physical"),
-  options = layersControlOptions(collapsed = T))
+  
+  addLayersControl(
+    baseGroups = c("Geo","Aerial", "Physical"),
+    options = layersControlOptions(collapsed = T))
 
 # note that you can feed plain Lat Long columns into Leaflet
 # without having to convert into spatial objects (sf), or projecting
@@ -79,7 +79,7 @@ AUSmap <- l_aus %>%
     primaryAreaUnit = "sqmeters",
     activeColor = "#3D535D",
     completedColor = "#7D4479") %>% 
-    htmlwidgets::onRender("
+  htmlwidgets::onRender("
                         function(el, x) {
                         var myMap = this;
                         myMap.on('baselayerchange',
@@ -87,7 +87,7 @@ AUSmap <- l_aus %>%
                         myMap.minimap.changeLayer(L.tileLayer.provider(e.name));
                         })
                         }") %>% 
-    addControl("", position = "topright")
+  addControl("", position = "topright")
 
 AUSmap
 
@@ -105,10 +105,17 @@ library(tidyverse)
 library(googlesheets4)
 library(leaflet)
 
-places <- read_sheet("https://docs.google.com/spreadsheets/d/1PlxsPElZML8LZKyXbqdAYeQCDIvDps2McZx1cTVWSzI/edit#gid=0",col_types = "cccnncn")
+places <- read_sheet("https://docs.google.com/spreadsheets/d/1PlxsPElZML8LZKyXbqdAYeQCDIvDps2McZx1cTVWSzI/edit#gid=0",col_types = "cccnncn") %>% 
+  filter(!is.na(Longitude))
 glimpse(places)
 
 leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = places$Longitude, 
+             lat = places$Latitude,
+             popup = places$Description)
+
+DKmap %>% 
   addTiles() %>% 
   addMarkers(lng = places$Longitude, 
              lat = places$Latitude,
