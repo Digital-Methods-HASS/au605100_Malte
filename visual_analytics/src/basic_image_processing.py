@@ -7,29 +7,60 @@ import argparse
 import numpy as np
 import cv2
 
+def main():
+
+    Assignment2()
+
+
 class Assignment2:
 
-    def __init__(self, data_dir=None):
+    def __init__(self, data_dir=None, out_dir=None):
 
         self.data_dir = data_dir
 
-        if data_dir is None:
+        self.out_dir = out_dir
 
-            data_dir = self.setting_default_data_dir()
+        if self.data_dir is None:
 
-        files = self.get_filepaths_from_data_dir(data_dir, file_extension="")
+            self.data_dir = self.setting_default_data_dir()
 
-        filenames = self.get_filenames(files)
+        if self.out_dir is None:
 
-        image_shapes = self.get_width_height_and_n_channels(files)
+            self.out_dir = self.setting_default_out_dir()
 
+        self.out_dir.mkdir(parents=True, exist_ok=True)
 
+        files = self.get_filepaths_from_data_dir(self.data_dir)
+
+        for file in files:
+
+            filename = self.get_filename(file)
+
+            image = self.load_image(file)
+
+            out_path = self.out_dir / filename
+
+            height, width, channels = self.get_width_height_and_n_channel(image)
+
+            self.split_and_save_image(image=image, 
+                                      out_path=out_path, 
+                                      height=height, 
+                                      width=width, 
+                                      channels=channels)
 
     def setting_default_data_dir(self):
 
         root_dir = Path.cwd()  # Setting root directory.
 
         data_dir = root_dir / "data" / "makeup"  # Setting data directory.
+
+        return data_dir
+
+    def setting_default_out_dir(self):
+
+        root_dir = Path.cwd()  # Setting root directory.
+
+        data_dir = root_dir / "data" / "makeup_splits"  # Setting data directory.
 
         return data_dir
 
@@ -45,7 +76,7 @@ class Assignment2:
 
         return files
 
-    def get_filenames(self, files):
+    def get_filename(self, file):
         """Creates a list of filenames in a directory.
 
         Args:
@@ -55,46 +86,58 @@ class Assignment2:
             filename: list of filenames
         """
 
-        filenames = []  # Creating empty list
+        filename = os.path.split(file)[-1]  # I take the last snippet of the path which is the file and the file extension.
 
-        # Loop for iterating through the different files.
-        for file in files:
+        return filename
 
-            novel_file_name = os.path.split(file)[-1]  # I take the last snippet of the path, which is the novel filename.
+    def load_image(self, file):
 
-            filenames.append(novel_file_name)  # Append each filename to the list.
+        image = cv2.imread(str(file))
 
-        return filenames
-
-    def load_images(files):
-
-        images = []
-
-        for file in files:
-
-            img = cv2.imread(str(file))
-
-            images.append(img)
-
-        return images
+        return image
 
 
 
-    def get_width_height_and_n_channels(images):
+    def get_width_height_and_n_channel(self, image):
 
-        image_shapes = []
+        height, width, channels = image.shape[0], image.shape[1], image.shape[2]
 
-        for file in files:
+        return height, width, channels
 
-            img = cv2.imread(str(file))
+    def split_and_save_image(self, image, out_path, height, width, channels):
 
-            image_shape = img.shape
+        filename = os.path.split(out_path)[1]
 
-            image_shapes.append(image_shape)
+        out_path = os.path.split(out_path)[0] + "/"
 
-        return image_shapes
+        filename_no_extention = os.path.splitext(filename)[0]  # Removal of file extenton
+
+        imgheight=image.shape[0]
+        
+        imgwidth=image.shape[1]
+     
+        middle_height = imgheight//2
+
+        middle_width = imgwidth//2
+
+        upper_left = image[0:middle_height, 0:middle_width]
+
+        upper_right = image[0:middle_height, middle_width:imgwidth]
+
+        lower_right = image[middle_height:imgheight, middle_width:imgwidth]
+        
+        lower_left = image[middle_height:imgheight, 0:middle_width]
+
+        cv2.imwrite(f"{out_path}{filename_no_extention}_upper_left_{str(middle_width)}x{str(middle_height)}.jpg", upper_left)
+
+        cv2.imwrite(f"{out_path}{filename_no_extention}_upper_right_{str(middle_width)}x{str(middle_height)}.jpg", upper_right)
+
+        cv2.imwrite(f"{out_path}{filename_no_extention}_lower_right_{str(middle_width)}x{str(middle_height)}.jpg", lower_right)
+
+        cv2.imwrite(f"{out_path}{filename_no_extention}_lower_left_{str(middle_width)}x{str(middle_height)}.jpg", lower_left)
+        
 
 
-
-
+if __name__ == "__main__":
+    main()
 
