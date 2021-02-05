@@ -11,3 +11,5 @@ pip install -r requirements.txt
 conda install opencv -y
 conda install ipykernel -y
 
+# Run basic_image_processing
+python src/basic_image_processing.py 

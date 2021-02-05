@@ -7,12 +7,21 @@ import argparse
 import numpy as np
 import cv2
 
-def main():
+def main(args):
 
-    Assignment2()
+    print("Initiating some awesome basic image processing!")
+
+    data_dir = args.data_dir
+
+    out_dir = args.out_dir
+
+    SplittingPicturesIntoQuadrants(data_dir=data_dir, out_dir=out_dir)
+
+    print(f"DONE! Have a nice day. :-)")
 
 
-class Assignment2:
+
+class SplittingPicturesIntoQuadrants:
 
     def __init__(self, data_dir=None, out_dir=None):
 
@@ -137,7 +146,20 @@ class Assignment2:
         cv2.imwrite(f"{out_path}{filename_no_extention}_lower_left_{str(middle_width)}x{str(middle_height)}.jpg", lower_left)
         
 
-
 if __name__ == "__main__":
-    main()
 
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--data_dir',
+                        metavar="data_dir",
+                        type=str,
+                        help='A PosixPath to the data directory',
+                        required=False)
+
+    parser.add_argument('--out_dir',
+                        metavar="out_dir",
+                        type=str,
+                        help='A path to the output directory',
+                        required=False)                
+
+    main(parser.parse_args())
