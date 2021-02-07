@@ -83,6 +83,14 @@ class WordCounts:
 
 
     def get_total_words(self, files):
+        """Gets the total number of words from all the files
+
+        Args:
+            files (list): List of ".txt" file paths
+
+        Returns:
+            [list]: List of total words per file in the input list
+        """
 
         total_words = []  # Creating empty list
 
